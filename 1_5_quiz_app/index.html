@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>EZQuiz Generator!</title>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+    <link href="Content/font-awesome.css" rel="stylesheet" />
+    <link href="Content/StyleSheet1.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="progress">
+
+                </div>
+                <div class="jumbotron well">
+                    <h1 id="quiz title">
+                        Error loading title!
+                    </h1>
+                    <div>
+                        <p id="preguntas">
+                            Please click Start when you are ready! or Edit if you would like to change the questions!
+                        </p>
+                    </div>
+                    <p>
+                        <a id="start next" class="btn btn-primary btn-large" onclick="MyQuizApp.startQuiz();">
+                            Start&nbsp;&nbsp;
+                            <span class='fa fa-play fa-2x'></span>
+                        </a>
+                        <a id="submit" class="btn btn-warning btn-large" onclick="MyQuizApp.openModalWindow();">
+                            Edit&nbsp;&nbsp;
+                            <span class='fa fa-edit fa-2x'></span>
+                        </a>
+                    </p>
+                </div>
+                <div>
+                    <!--THIS DIV CONTAINS THE DRAG AND DROP WHICH IS HIDDEN BY DEFAULT-->
+                    <div class="row clearfix">
+                        <div id="respuestas" class="col-md-12 column">
+
+                        </div>
+
+                        <div id="respuestasDrag" class="col-md-12 column displayNone">
+
+                            <div id="draggable1" class="ui-widget-content">
+                                <p id="Xdraggable1">Option 1</p>
+                            </div>
+
+                            <div id="draggable2" class="ui-widget-content">
+                                <p id="Xdraggable2">Option2</p>
+                            </div>
+
+                            <div id="draggable3" class="ui-widget-content">
+                                <p id="Xdraggable3">Option3</p>
+                            </div>
+
+                            <div id="droppable" class="ui-widget-content">
+                                <p>
+                                    <center><span class='fa fa-trash-o fa-5x'></span></center>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!--THE DRAG AND DROP ENDS HERE-->
+
+                </div>
+                <br />
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <ul class="pagination" id="progress bar"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal FOR EDIT QUESTIONS Starts Here-->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="edit-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="edit-modal" aria-hidden="true" onclick="MyQuizApp.closeQuestion();">&times;</button>
+                    <h4 class="modal-title" id="modal title">Title Error!</h4>
+                </div>
+
+                <div class="modal-header displayNormal" id="topButtons">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type='button' class='btn btn-warning' onclick='MyQuizApp.randomAll();'><span class='fa fa-hand-o-right fa-2x'></span>..<span class='fa fa-random fa-2x'></span></button>
+                    <button type='button' class='btn btn-success' onclick='MyQuizApp.addQuestion();'><span class='fa fa-hand-o-right fa-2x'></span>..<span class='fa fa-plus fa-2x'></span></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-times fa-2x"></span></button>
+                    <button type="button" class="btn btn-primary" onclick="MyQuizApp.saveChangesAndClose();"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-floppy-o fa-2x"></span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row clearfix">
+                            <table id="modal table"></table>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="modal-title"></h4>
+                <div class="modal-footer displayNormal" id="bottomButtons">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-times fa-2x"></span></button>
+                    <button type="button" class="btn btn-primary" onclick="MyQuizApp.saveChangesAndClose();"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-floppy-o fa-2x"></span></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--Modal FOR CORRECT ANSWERS Starts Here-->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabelCorrect" aria-hidden="true" id="correct-modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align: center">
+                    <button type="button" class="btn btn-success" data-dismiss="modal"><span class="fa fa-check fa-5x"></span></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--Modal FOR IIINNNNNCORRECT ANSWERS Starts Here-->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabelIncorrect" aria-hidden="true" id="incorrect-modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align: center">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="fa fa-times fa-5x"></span></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--Modal FOR READY GOOO! ANSWERS Starts Here-->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelReadyGo" aria-hidden="true" id="ready-go-modal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align: center">
+                    <button type="button" class="btn btn-success" data-dismiss="modal"><span class="fa fa-spinner fa-spin fa-5x"></span><span class="fa fa-5x">Go!</span><span class="fa fa-rocket fa-5x"></span></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!--Modal FOR FINAL RESULTS!!! Starts Here-->
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFinal" aria-hidden="true" id="final-modal" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align: center">
+                    <span class="btn btn-info"><span class="fa fa-pencil-square-o fa-3x"></span><span class="fa fa-3x">&nbsp;Results!</span></span>
+                    <div>
+                        <table id="final table" class="center table table-striped">
+
+                        </table>
+                    </div>
+                    <div id="final results" class="fa fa-3x">
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <script src="Scripts/jquery-2.1.1.js"></script>
+    <script src="Scripts/jquery-ui.js"></script>
+    <script src="Scripts/bootstrap.js"></script>
+    <script src="Scripts/JavaScript1.js"></script>
+</body>
+</html>
