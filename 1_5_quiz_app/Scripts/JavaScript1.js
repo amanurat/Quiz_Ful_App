@@ -423,7 +423,7 @@ MyQuizApp.finalResults = function () {
     percentageCorrect = numberCorrect / MyQuizApp.questions.length;
     percentageCorrect = parseInt(percentageCorrect * 100) + "%";
     document.getElementById("final results").innerHTML = percentageCorrect;
-    holder = "<tr><td>Your Answer</td><td>&nbsp;:&nbsp;</td><td>Correct Answer</td></tr>";
+    holder = "<tr style='font-weight:bold'><td>Your Answer</td><td>&nbsp;:&nbsp;</td><td>Correct Answer</td></tr>";
     for (var i = 0; i < MyQuizApp.questions.length; i++) {
         holder += "<tr><td>";
         holder += MyQuizApp.questions[i].answerChosen;

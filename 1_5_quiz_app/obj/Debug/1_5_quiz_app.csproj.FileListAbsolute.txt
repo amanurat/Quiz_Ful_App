@@ -10,3 +10,9 @@ C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\1_5_quiz_app\bin\1_5_quiz_a
 C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\1_5_quiz_app\obj\Debug\1_5_quiz_app.csprojResolveAssemblyReference.cache
 C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\1_5_quiz_app\obj\Debug\1_5_quiz_app.dll
 C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\1_5_quiz_app\obj\Debug\1_5_quiz_app.pdb
+C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\Quiz_Ful_App\1_5_quiz_app\bin\1_5_quiz_app.dll.config
+C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\Quiz_Ful_App\1_5_quiz_app\bin\1_5_quiz_app.dll
+C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\Quiz_Ful_App\1_5_quiz_app\bin\1_5_quiz_app.pdb
+C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\Quiz_Ful_App\1_5_quiz_app\obj\Debug\1_5_quiz_app.csprojResolveAssemblyReference.cache
+C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\Quiz_Ful_App\1_5_quiz_app\obj\Debug\1_5_quiz_app.dll
+C:\Users\Uriel\Google Drive\codercamps\_1_5_quiz_app\Quiz_Ful_App\1_5_quiz_app\obj\Debug\1_5_quiz_app.pdb
