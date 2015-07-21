@@ -484,7 +484,6 @@ MyQuizApp.resetDrag = function () {
 }
 
 MyQuizApp.enterPressed = function (e) {
-    console.log(e);
     if (e.charCode === 13 || e.keyCode === 13) {
         MyQuizApp.nextQuestion();
     }
