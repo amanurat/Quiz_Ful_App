@@ -1,4 +1,4 @@
-﻿"use strict"
+"use strict"
 var MyQuizApp = {};
 MyQuizApp.questions = [];
 MyQuizApp.quizTitle = "Video Game Quiz!";
@@ -258,7 +258,7 @@ MyQuizApp.progressBarUpdate = function () {
         listHolder += "'></span></span></li>";
     }
     listHolder += "<li><span>Finish</span></li>";
-    document.getElementById("progress bar").innerHTML = listHolder;
+    document.getElementById("progressBar").innerHTML = listHolder;
 };
 
 MyQuizApp.startQuiz = function () {
