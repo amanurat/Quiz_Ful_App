@@ -1,390 +1,498 @@
 "use strict"
-var twitter = {};
-twitter.firstTimeLoadingPage = true;
-twitter.tweets = [];
-twitter.urlbase = "codercamps-uc";
-twitter.friends = [
-                //{ "url": "codercamps-uc2" }, //Me2
-                //{ "url": "codercamps-mojo" },//joe
-                //{ "url": "codercamps-csoler" }, //Christian
-                //{ "url": "multiobjects" }, //Taryn
-                //{ "url": "vejabi" },//Joshua
-                //{ "url": "yolo360noscoped" },//Mondo
-                //{ "url": "tweetscodercamps" },//Antonio
-                //{ "url": "chirpster" },//Logan
-                //{ "url": "chippel" },//Aaron
-                //{ "url": "chirp101" },//Abraham
-                //{ "url": "tersebird" },//Eric
-                //{ "url": "crackling-fire-6742" }//Mike
-];
-twitter.mainCounter = 0;
-twitter.profile = [];
-twitter.profileOriginal = [{
-    url: "codercamps-uc",
-    name: "UC",
-    image: "http://oi57.tinypic.com/29ojsl2.jpg",
-    bio: " The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog",
-}];
+var MyQuizApp = {};
+MyQuizApp.questions = [];
+MyQuizApp.quizTitle = "Video Game Quiz!";
+MyQuizApp.currentQuestion = "";
+MyQuizApp.draggedItem = "";
 
-twitter.URLMaker = function (base, directories) {
-    var holder = "https://";
-    if (base) {
-        holder += base + ".firebaseio.com/";
+// The 1st array below is the name that we will be tracking, the 2nd array below is how we will
+// present the options to the user.
+MyQuizApp.typeOfQuestions = [
+                                ["MultipleChoice",
+                                "FillInBlank",
+                                "MoreThanOneCorrect",
+                                "DragAndDrop"],
+                                ["Multiple choice",
+                                "Fill in the blank",
+                                "More than one correct",
+                                "Drag and drop"]
+];
+
+MyQuizApp.Quest = function (questionType, questionText, optionsArray, correctOption) {
+    "use strict"
+    this.questionType = questionType;
+    this.questionText = questionText;
+    this.optionsArray = optionsArray;
+    this.correctOption = correctOption;
+};
+
+MyQuizApp.Quest.prototype.answerChosen = "_";
+MyQuizApp.Quest.prototype.correctIncorrect = "";
+
+
+MyQuizApp.questions.push(new MyQuizApp.Quest(
+                            MyQuizApp.typeOfQuestions[0][0],
+                            "Which was the year of the NES release in North America?",
+                            ["1985", "1981", "1983"],
+                            ["1985", ""]
+));
+
+MyQuizApp.questions.push(new MyQuizApp.Quest(
+                            MyQuizApp.typeOfQuestions[0][1],
+                            "What is the first name of the main character in RE4?",
+                            ["", "", ""],
+                            ["Leon", ""]
+));
+
+MyQuizApp.questions.push(new MyQuizApp.Quest(
+                            MyQuizApp.typeOfQuestions[0][2],
+                            "What game(s) was developed by Rare?",
+                            ["Donkey Kong Country", "Metal Gear Solid", "Perfect Dark"],
+                            ["Donkey Kong Country", "Perfect Dark"]
+));
+
+MyQuizApp.questions.push(new MyQuizApp.Quest(
+                            MyQuizApp.typeOfQuestions[0][0],
+                            'Which of these was the inspiration for an animated movie called "Advent Children"?',
+                            ["Final Fantasy VII", "Halo 2", "Last of Us"],
+                            ["Final Fantasy VII", ""]
+));
+
+MyQuizApp.questions.push(new MyQuizApp.Quest(
+                            MyQuizApp.typeOfQuestions[0][3],
+                            "Remove the item that doesn't belong with the others.",
+                            ["Triforce of Force", "Triforce of Wisdom", "Triforce of Courage"],
+                            ["Triforce of Force", ""]
+));
+
+MyQuizApp.randomArray = function (array) {
+    // While there remain elements to shuffle...
+    "use strict"
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
     }
-    else {
-        holder += twitter.urlbase + ".firebaseio.com/";
+    return array;
+};
+
+MyQuizApp.randomizeOptions = function () {
+    "use strict"
+    for (var i in MyQuizApp.questions) {
+        MyQuizApp.questions[i].optionsArray = MyQuizApp.randomArray(MyQuizApp.questions[i].optionsArray);
     }
-    if (directories) {
-        if (typeof directories === "string") {
-            holder += directories;
+};
+
+MyQuizApp.addQuestion = function () {
+    "use strict"
+    var newQuestion = new MyQuizApp.Quest(MyQuizApp.typeOfQuestions[0][0], "", ["", "", ""], ["", ""]);
+    MyQuizApp.questions.unshift(newQuestion);
+    MyQuizApp.drawToModal();
+    MyQuizApp.passValuestoModal();
+    MyQuizApp.progressBarUpdate();
+};
+
+MyQuizApp.drawToTitleMain = function () {
+    document.getElementById("quiz title").innerHTML = MyQuizApp.quizTitle;
+};
+
+MyQuizApp.drawToTitleModal = function () {
+    var modalTitleHolder = "";
+    modalTitleHolder += "<input type='text' id='modal title input' class='form-control' value='"
+    modalTitleHolder += MyQuizApp.quizTitle;
+    modalTitleHolder += "'>";
+    document.getElementById("modal title").innerHTML = modalTitleHolder;
+};
+
+MyQuizApp.drawToModal = function () {
+    "use strict"
+    var modalHolder = "";
+    for (var i = 0; i < MyQuizApp.questions.length; i++) {
+        modalHolder += "<tr><td><ul style='list-style-type:none'>";
+        modalHolder += "<li>";
+        modalHolder += "&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;Type Of Question";
+        modalHolder += "<select name='cars' class='form-control' id='" + i + "type of question'>";
+        for (var j = 0; j < MyQuizApp.typeOfQuestions[0].length; j++) {
+            modalHolder += "<option value='" + MyQuizApp.typeOfQuestions[0][j] + "'>";
+            modalHolder += MyQuizApp.typeOfQuestions[1][j] + "</option>";
+        };
+        modalHolder += "</select>";
+        modalHolder += "</li>";
+        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
+        modalHolder += "Question<input type='text' id='" + i + "question' class='form-control'></li>";
+        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
+        modalHolder += "Answer Option 1<input type='text' id='" + i + "answer option 1' class='form-control'></li>";
+        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
+        modalHolder += "Answer Option 2<input type='text' id='" + i + "answer option 2' class='form-control'></li>";
+        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
+        modalHolder += "Answer Option 3<input type='text' id='" + i + "answer option 3' class='form-control'></li>";
+        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
+        modalHolder += "Correct Option 1<input type='text' id='" + i + "correct option 1' class='form-control'></li>";
+        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
+        modalHolder += "Correct Option 2<input type='text' id='" + i + "correct option 2' placeholder='Optional' class='form-control'></li>";
+        modalHolder += "<li>&nbsp;</li>";
+        if (MyQuizApp.questions.length === 1) {
+            modalHolder += "<li class='displayNone'>";
         } else {
-            holder += directories.join("/");
+            modalHolder += "<li>";
+        }
+        modalHolder += "<div class='btn btn-danger' onclick='MyQuizApp.deleteQuestion(";
+        modalHolder += i + ");'><span class='fa fa-hand-o-right fa-2x'></span>..<span class='fa fa-trash-o fa-2x'></span></div></li>";
+        modalHolder += "</ul></td></tr>";
+        if (MyQuizApp.questions.length !== i + 1) {
+            modalHolder += "<tr><td><hr></td></tr>";
         }
     }
-    holder += "/.json";
+    document.getElementById("modal table").innerHTML = modalHolder;
+};
+
+MyQuizApp.closeQuestion = function () {
+    $("#edit-modal").modal('hide');
+}
+
+MyQuizApp.dropDown = function (type, elementID) {
+    "use strict"
+    var selectoptions = document.getElementById(elementID).getElementsByTagName("option");
+    for (var i = 0; i < selectoptions.length; i++) {
+        selectoptions[i].removeAttribute("selected");
+    }
+    if (type === MyQuizApp.typeOfQuestions[0][0]) {
+        selectoptions[0].setAttribute("selected", "selected");
+    } else if (type === MyQuizApp.typeOfQuestions[0][1]) {
+        selectoptions[1].setAttribute("selected", "selected");
+    } else if (type === MyQuizApp.typeOfQuestions[0][2]) {
+        selectoptions[2].setAttribute("selected", "selected");
+    } else if (type === MyQuizApp.typeOfQuestions[0][3]) {
+        selectoptions[3].setAttribute("selected", "selected");
+    } else {
+        alert("Error, please contact administrator");
+    }
+};
+
+MyQuizApp.deleteQuestion = function (i) {
+    "use strict"
+    MyQuizApp.saveChanges();
+    MyQuizApp.questions.splice(i, 1);
+    MyQuizApp.drawToModal();
+    MyQuizApp.passValuestoModal();
+    MyQuizApp.progressBarUpdate();
+    alert("Question deleted successfully!");
+};
+
+MyQuizApp.saveChanges = function () {
+    "use strict"
+    MyQuizApp.quizTitle = document.getElementById("modal title input").value;
+    for (var i = 0; i < MyQuizApp.questions.length; i++) {
+        MyQuizApp.questions[i].questionType = document.getElementById(i + "type of question").value;
+        MyQuizApp.questions[i].questionText = document.getElementById(i + "question").value;
+        for (var j = 0; j < MyQuizApp.questions[i].optionsArray.length; j++) {
+            var n = j + 1;
+            MyQuizApp.questions[i].optionsArray[j] = document.getElementById(i + "answer option " + n).value;
+        }
+        for (var j = 0; j < MyQuizApp.questions[i].correctOption.length; j++) {
+            var n = j + 1;
+            MyQuizApp.questions[i].correctOption[j] = document.getElementById(i + "correct option " + n).value;
+        }
+    }
+};
+
+MyQuizApp.saveChangesAndClose = function () {
+    "use strict"
+    MyQuizApp.saveChanges();
+    MyQuizApp.drawToTitleMain();
+    alert("Changes saved successfully!");
+    $("#edit-modal").modal('hide');
+};
+
+MyQuizApp.passValuestoModal = function () {
+    "use strict"
+    var type, text, op1, op2, op3, c1, c2;
+    for (var i = 0; i < MyQuizApp.questions.length; i++) {
+        type = MyQuizApp.questions[i].questionType;
+        text = MyQuizApp.questions[i].questionText;
+        op1 = MyQuizApp.questions[i].optionsArray[0];
+        op2 = MyQuizApp.questions[i].optionsArray[1];
+        op3 = MyQuizApp.questions[i].optionsArray[2];
+        c1 = MyQuizApp.questions[i].correctOption[0];
+        c2 = MyQuizApp.questions[i].correctOption[1];
+        MyQuizApp.dropDown(type, i + "type of question");
+        document.getElementById(i + "question").value = text;
+        document.getElementById(i + "answer option 1").value = op1;
+        document.getElementById(i + "answer option 2").value = op2;
+        document.getElementById(i + "answer option 3").value = op3;
+        document.getElementById(i + "correct option 1").value = c1;
+        document.getElementById(i + "correct option 2").value = c2;
+    }
+};
+
+MyQuizApp.randomAll = function () {
+    MyQuizApp.questions = MyQuizApp.randomArray(MyQuizApp.questions);
+    MyQuizApp.randomizeOptions();
+    MyQuizApp.drawToModal();
+    MyQuizApp.passValuestoModal();
+    MyQuizApp.saveChanges();
+    MyQuizApp.drawToTitleMain();
+    MyQuizApp.saveChanges();
+};
+
+MyQuizApp.openModalWindow = function () {
+    $("#edit-modal").modal();
+};
+
+MyQuizApp.progressBarUpdate = function () {
+    var listHolder = "<li><span>Start</span></li>";
+    for (var i = 0; i < MyQuizApp.questions.length; i++) {
+        listHolder += "<li class='enabled' id='";
+        listHolder += i + "barQuestion";
+        listHolder += "'><span>" + (i + 1) + "<span class='";
+        if (MyQuizApp.questions[i].correctIncorrect === "correct") {
+            listHolder += "fa fa-check";
+        } else if (MyQuizApp.questions[i].correctIncorrect === "incorrect") {
+            listHolder += "fa fa-times";
+        }
+        listHolder += "'></span></span></li>";
+    }
+    listHolder += "<li><span>Finish</span></li>";
+    document.getElementById("progressBar").innerHTML = listHolder;
+};
+
+MyQuizApp.startQuiz = function () {
+    MyQuizApp.currentQuestion = 0;
+    document.getElementById("respuestas").className = "col-md-12 column";
+    document.getElementById("respuestasDrag").className = "displayNone";
+    var typeQuestions = MyQuizApp.OptionsHTML(MyQuizApp.currentQuestion);
+    document.getElementById("preguntas").innerHTML = MyQuizApp.questions[0].questionText;
+    $('#respuestas').html(typeQuestions);
+    document.getElementById("start next").innerHTML = "Submit&nbsp;&nbsp;<span class='fa fa-play fa-2x'></span>";
+    document.getElementById("submit").className = "displayNone";
+    document.getElementById("start next").setAttribute("onclick", "MyQuizApp.nextQuestion();");
+    $("#ready-go-modal").modal();
+    setTimeout(function () {
+        $("#ready-go-modal").modal('hide');
+    }, 1000); // how long do you want the delay to be? 
+};
+
+MyQuizApp.displayAnswersModal = function (q) {
+    if (MyQuizApp.questions[q].correctIncorrect === "correct") {
+        $("#correct-modal").modal();
+        setTimeout(function () {
+            $("#correct-modal").modal('hide');
+        }, 1000); // how long do you want the delay to be? 
+    } else {
+        $("#incorrect-modal").modal();
+        setTimeout(function () {
+            $("#incorrect-modal").modal('hide');
+        }, 1000); // how long do you want the delay to be?
+    }
+    MyQuizApp.progressBarUpdate();
+};
+
+MyQuizApp.OptionsHTML = function (q) {
+    var type = MyQuizApp.questions[q].questionType;
+    if (MyQuizApp[type]) { return MyQuizApp[type](q); }
+    else { return "Error, please contact your administrator"; }
+};
+
+MyQuizApp.nextQuestion = function () {
+    var i = MyQuizApp.currentQuestion;
+    var iNext = i + 1;
+    document.getElementById("respuestas").className = "col-md-12 column";
+    document.getElementById("respuestasDrag").className = "displayNone";
+    MyQuizApp.getAnswer();
+    if (MyQuizApp.currentQuestion === MyQuizApp.questions.length - 1) {
+        MyQuizApp.finalResults();
+    } else {
+        var typeQuestions = MyQuizApp.OptionsHTML(iNext);
+        document.getElementById("preguntas").innerHTML = MyQuizApp.questions[iNext].questionText;
+        $("#respuestas").html(typeQuestions);
+        MyQuizApp.currentQuestion++;
+        MyQuizApp.displayAnswersModal(i);
+    }
+
+};
+
+MyQuizApp.getAnswer = function () {
+    var q = MyQuizApp.currentQuestion;
+    var options = MyQuizApp.questions[q].optionsArray;
+    MyQuizApp.questions[q].correctIncorrect = "incorrect"
+
+    // FOR MULTIPLE CHOICE
+    if (MyQuizApp.questions[q].questionType === "MultipleChoice") {
+        for (var i = 0; i < options.length; i++) {
+            if (document.getElementById(options[i]).checked) {
+                MyQuizApp.questions[q].answerChosen = document.getElementById(options[i]).value;
+                break;
+            }
+        }
+    }
+
+    // FOR FILL IN BLANK
+    if (MyQuizApp.questions[q].questionType === "FillInBlank") {
+        if (document.getElementById("tigre tono").value !== "") {
+            MyQuizApp.questions[q].answerChosen = document.getElementById("tigre tono").value;
+        }
+    }
+
+    // FOR MORE THAN ONE CORRECT
+    if (MyQuizApp.questions[q].questionType === "MoreThanOneCorrect") {
+        MyQuizApp.questions[q].answerChosen = ["", "", ""];
+        for (var i = 0; i < options.length; i++) {
+            if (document.getElementById(options[i]).checked) {
+                MyQuizApp.questions[q].answerChosen[i] = document.getElementById(options[i]).value;
+            }
+        }
+        var correctArray = MyQuizApp.questions[q].correctOption.join("").split("").sort().join("");
+        var myArray = MyQuizApp.questions[q].answerChosen.join("").split("").sort().join("");
+        if (correctArray == myArray) { MyQuizApp.questions[q].correctIncorrect = "correct"; }
+    }
+
+    // FOR DRAG AND DROP
+    if (MyQuizApp.questions[q].questionType === "DragAndDrop") {
+        MyQuizApp.resetDrag();
+    }
+
+
+    //CHECK FOR ALLLLLL IN THE END (EXCEPT FOR "MORE THAN ONE CORRECT"
+    for (var i = 0; i < MyQuizApp.questions[q].correctOption.length; i++) {
+        if (MyQuizApp.questions[q].questionType === "MoreThanOneCorrect") { break; }
+        if (MyQuizApp.questions[q].answerChosen.toLowerCase() === MyQuizApp.questions[q].correctOption[i].toLowerCase()) {
+            MyQuizApp.questions[q].correctIncorrect = "correct";
+            break;
+        }
+    }
+};
+
+MyQuizApp.MultipleChoice = function (quest) {
+    var options = MyQuizApp.questions[quest].optionsArray;
+    var holder = "";
+    holder += "<div class='btn-group' data-toggle='buttons'>";
+    for (var i = 0; i < options.length ; i++) {
+        holder += "<label class='btn btn-default'><input type='radio' id='"
+        holder += options[i];
+        holder += "' value='" + options[i];
+        holder += "'>" + options[i] + "</label>"
+    }
+    holder += "</div>";
     return holder;
 };
 
-///Our generalized AJAX CAll
-twitter.Ajax = function (/*"GET", "POST", "PATCH" or "DELETE"*/method,
-    /*"https://example.firebaseio.com/folders(or not)/.json"*/URL,
-    /*Data to send stringified (can be null if DELETING or GETTING)*/data,
-    /*What FUNCTION>>DO NOT PUT THE PARENTHESIS() CAUSE IS A CALLBACK<< to do if success, can be null*/success,
-    /*What FUNCTION>>DO NOT PUT THE PARENTHESIS() CAUSE IS A CALLBACK<< to do if fail, can be null*/failure,
-    /*Index required for some success callbacks, can be null*/index) {
-    var request = new XMLHttpRequest();
-    request.open(method, URL);
-    request.onload = function () {
-        if (this.status >= 200 && this.status < 400) {
-            if (typeof success === 'function') {
-                success(this.response, index);
-            }
-        } else {
-            if (typeof failure === 'function') {
-                failure(this.response);
-            } else {
-                console.log("Error on " + method + " to " + URL + ": " + this.response);
-            }
-        }
-    };
-    request.onerror = function () {
-        if (typeof failure === 'function') {
-            failure(this.readyState + "Com Error");
-        }
-    };
-    request.send(JSON.stringify(data));
+MyQuizApp.FillInBlank = function () {
+    var options = MyQuizApp.questions[MyQuizApp.currentQuestion].optionsArray;
+    var holder = "<form class='navbar-form navbar-left' onSubmit='return false;'><div class='form-group'>";
+    holder += "<input id='tigre tono'";
+    holder += "type='text' class='form-control' placeholder='Enter answer' onkeypress='MyQuizApp.enterPressed(window.event)'></div></form>";
+    return holder;
 };
 
-twitter.getFriends = function () {
-    twitter.Ajax(
-        "GET",
-        twitter.URLMaker(null, "friends"),
-        null,
-        twitter.putFriendsInArray,
-        console.log
-    );
-};
-
-twitter.getProfile = function () {
-    twitter.Ajax(
-        "GET",
-        twitter.URLMaker(null, "profile"),
-        null,
-        twitter.saveMyProfileLocally,
-        console.log
-    );
-};
-
-
-twitter.saveMyProfileLocally = function (data) {
-    data = JSON.parse(data);
-    twitter.profile = [];
-    for (var w in data) {
-        data[w].key = w;
-        twitter.profile.push(data[w]);
+MyQuizApp.MoreThanOneCorrect = function (quest) {
+    var options = MyQuizApp.questions[quest].optionsArray;
+    var holder = "<div>(Select All Possible Answers)</div>";
+    holder += "<div class='btn-group' data-toggle='buttons'>";
+    for (var i = 0; i < options.length ; i++) {
+        holder += "<label class='btn btn-default'><input type='checkbox' id='"
+        holder += options[i];
+        holder += "' value='" + options[i];
+        holder += "'>" + options[i] + "</label>"
     }
-    twitter.writeProfile();
-    if (twitter.firstTimeLoadingPage) {
-        twitter.getMyTweets();
-        twitter.firstTimeLoadingPage = false;
+    holder += "</div>";
+    return holder;
+};
+
+MyQuizApp.DragAndDrop = function (quest) {
+    document.getElementById("respuestas").className = "displayNone";
+    document.getElementById("respuestasDrag").className = "col-md-12 column displayNormal";
+    var arrayX = MyQuizApp.questions[quest].optionsArray
+    document.getElementById("Xdraggable1").innerHTML = arrayX[0];
+    document.getElementById("Xdraggable2").innerHTML = arrayX[1];
+    document.getElementById("Xdraggable3").innerHTML = arrayX[2];
+};
+
+MyQuizApp.finalResults = function () {
+    var numberCorrect = 0;
+    var percentageCorrect;
+    var holder;
+    MyQuizApp.progressBarUpdate();
+    for (var i = 0; i < MyQuizApp.questions.length; i++) {
+        if (MyQuizApp.questions[i].correctIncorrect === "correct") { numberCorrect++; }
     }
-};
-
-twitter.writeProfile = function () {
-    var holder = "";
-    document.getElementById("name").innerHTML = twitter.profile[0].name;
-    document.getElementById("photo").setAttribute("src", twitter.profile[0].image);
-    document.getElementById("bio").innerHTML = twitter.profile[0].bio;
-    document.getElementById("profile_editing").className = "hide";
-    document.getElementById("profile_showing").className = "show";
-};
-
-twitter.updateProfile = function () {
-    document.getElementById("profile_showing").className = "hide";
-    document.getElementById("profile_editing").className = "show";
-    document.getElementById("name_update").value = twitter.profileOriginal[0].name;
-    document.getElementById("bio_update").value = twitter.profileOriginal[0].bio;
-    document.getElementById("img_update").value = twitter.profileOriginal[0].image;
-};
-
-twitter.saveProfile = function () {
-    twitter.addProfile();
-    document.getElementById("profile_showing").className = "show";
-    document.getElementById("profile_editing").className = "hide";
-};
-
-twitter.putFriendsInArray = function (data) {
-    data = JSON.parse(data);
-    twitter.friends = [];
-    for (var w in data) {
-        data[w].key = w;
-        twitter.friends.push(data[w]);
+    percentageCorrect = numberCorrect / MyQuizApp.questions.length;
+    percentageCorrect = parseInt(percentageCorrect * 100) + "%";
+    document.getElementById("final results").innerHTML = percentageCorrect;
+    holder = "<tr style='font-weight:bold'><td>Your Answer</td><td>&nbsp;:&nbsp;</td><td>Correct Answer</td></tr>";
+    for (var i = 0; i < MyQuizApp.questions.length; i++) {
+        holder += "<tr><td>";
+        holder += MyQuizApp.questions[i].answerChosen;
+        holder += "</td><td>:</td><td>";
+        holder += MyQuizApp.questions[i].correctOption[0] + ",";
+        holder += MyQuizApp.questions[i].correctOption[1];
+        holder += "</td></tr>";
+        document.getElementById("final table").innerHTML = holder;
     }
-    twitter.getFriendsProfileDataIteration();
+    $("#final-modal").modal();
 };
 
-twitter.getFriendsProfileDataIteration = function () {
-    for (var i = 0; i < twitter.friends.length; i++) {
-        twitter.getFriendsProfileData(i);
-    }
-};
+$(function () {
+    $("#draggable1").draggable({ revert: 'invalid', });
+    $("#draggable2").draggable({ revert: 'invalid', });
+    $("#draggable3").draggable({ revert: 'invalid', });
 
-twitter.getFriendsProfileData = function (index) {
-    var friendSubDomain = twitter.friends[index].url;
-    twitter.Ajax(
-        "GET",
-        twitter.URLMaker(friendSubDomain, "profile"),
-        null,
-        twitter.saveFriendsProfileLocally,
-        console.log,
-        index
-        )
-};
-
-twitter.saveFriendsProfileLocally = function (response, index) {
-    var data = JSON.parse(response);
-    for (var w in data) {
-        twitter.friends[index].name = data[w].name;
-        twitter.friends[index].image = data[w].image;
-        twitter.friends[index].bio = data[w].bio;
-    }
-    twitter.writeFriends(index);
-};
-
-twitter.writeFriends = function (index) {
-    var holder = "";
-    holder += "<div class='row clearfix well well-sm'><div class='col-md-4 column'><img src='";
-    holder += twitter.friends[index].image;
-    holder += "' width='64' height='64' class='img-circle' alt='64x64' /></div><div class='col-md-8 column'><div class='row clearfix'><div class='col-md-12 column'><h4><small>"
-    holder += twitter.friends[index].name;
-    holder += "</small></h4>";
-    holder += "<h4><small>" + twitter.friends[index].url + "</small></h4>";
-    holder += "</div></div><div class='row clearfix'><div class='col-md-12 column'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-    holder += "<!-- <button class='btn btn-primary btn-xs'><span class='fa fa-envelope'></span></button> -->";
-    holder += "&nbsp;&nbsp;<button class='btn btn-danger btn-xs' onclick='twitter.deleteFriends(\"" + twitter.friends[index].key + "\")'>Delete</button></div></div></div></div>";
-    twitter.getFriendsTweets(index);
-    document.getElementById("friends_place").innerHTML += holder;
-};
-
-twitter.getMyTweets = function () {
-    twitter.Ajax(
-        "GET",
-        twitter.URLMaker(null, "tweets"),
-        null,
-        twitter.saveMyTweetsLocally,
-        console.log
-        );
-};
-
-twitter.getFriendsTweets = function (index) {
-    var friendSubDomain = twitter.friends[index].url;
-    twitter.Ajax(
-        "GET",
-        twitter.URLMaker(friendSubDomain, "tweets"),
-        null,
-        twitter.saveFriendsTweetsLocally,
-        console.log,
-        index
-        )
-};
-
-twitter.saveMyTweetsLocally = function (response) {
-    var data = JSON.parse(response);
-    for (var w in data) {
-        var indexArray = []
-        for (var j in twitter.tweets) {
-            indexArray.push(twitter.tweets[j].key);
-        }
-        data[w].key = w;
-        if (twitter.profile[0].image) {
-            data[w].image = twitter.profile[0].image;
-        } else {
-            data[w].image = twitter.profileOriginal[0].image;
-        }
-        if (twitter.profile[0].name) {
-            data[w].name = twitter.profile[0].name;
-        } else {
-            data[w].name = twitter.profileOriginal[0].name;
-        }
-        if (twitter.profile[0].url) {
-            data[w].url = twitter.profile[0].url;
-        } else {
-            data[w].url = twitter.profileOriginal[0].url;
-        }
-        twitter.tweets.push(data[w]);
-    }
-    twitter.checkIfWriteTweets();
-};
-
-twitter.saveFriendsTweetsLocally = function (response, index) {
-    var data = JSON.parse(response);
-    for (var w in data) {
-        var indexArray = []
-        for (var j in twitter.tweets) {
-            indexArray.push(twitter.tweets[j].key);
-        }
-        data[w].key = w;
-        data[w].name = twitter.friends[index].name;
-        data[w].url = twitter.friends[index].url;
-        data[w].image = twitter.friends[index].image;
-        twitter.tweets.push(data[w]);
-    }
-    twitter.checkIfWriteTweets();
-};
-
-twitter.checkIfWriteTweets = function () {
-    twitter.mainCounter++;
-    if (twitter.mainCounter === twitter.friends.length + 1) {
-        twitter.mainCounter = 0;
-        twitter.writeTweets();
-        twitter.tweets = [];
-    }
-};
-
-twitter.writeTweets = function () {
-    twitter.tweets.sort(function (a, b) {
-        return (a.time > b.time) ? -1 : (b.time > a.time ? 1 : 0);
+    $("#draggable1").data({
+        'originalLeft': $("#draggable1").css('left'),
+        'origionalTop': $("#draggable1").css('top')
     });
-    var holder = "";
-    for (var w in twitter.tweets) {
-        holder += "<div class='row clearfix media well' id=";
-        holder += twitter.tweets[w].key;
-        holder += "><div class='col-md-2 column'><img src='";
-        holder += twitter.tweets[w].image;
-        holder += "' width='64' height='64' class='img-circle' alt='64x64' /></div>";
-        holder += "<div class='col-md-10 column'><div class='row clearfix'><div class='col-md-12 column'><div class='col-md-6 column'>";
-        holder += "<h4><small>" + twitter.tweets[w].name + "</small></h4>";
-        holder += "<h4><small>" + twitter.tweets[w].url + "</small></h4>";
-        holder += "</div><div class='col-md-4 column'><h4><small>";
-        var fecha = twitter.tweets[w].time;
-        fecha = new Date(fecha);
-        holder += (fecha.toString("MMM-dd h:mm tt"));
-        holder += "</small></h4></div><div class='col-md-2 column'>"
-        if (twitter.tweets[w].url === twitter.profile[0].url) {
-            holder += "<button class='btn btn-danger btn-xs'";
-            holder += "onclick='twitter.deleteTweet(\"" + twitter.tweets[w].key + "\")'>Delete</button>";
+    $("#draggable2").data({
+        'originalLeft': $("#draggable1").css('left'),
+        'origionalTop': $("#draggable1").css('top')
+    });
+    $("#draggable3").data({
+        'originalLeft': $("#draggable1").css('left'),
+        'origionalTop': $("#draggable1").css('top')
+    });
+
+    $("#droppable").droppable({
+        activeClass: "ui-state-default",
+        hoverClass: "ui-state-hover",
+        drop: function (event, ui) {
+            var Xsufix = ui.draggable.attr("id");
+            var Answer = document.getElementById("X" + Xsufix).innerHTML;
+            MyQuizApp.questions[MyQuizApp.currentQuestion].answerChosen = Answer;
+            MyQuizApp.nextQuestion();
         }
-        holder += "</div></div></div><div class='row clearfix'><div class='col-md-12 column'><h5>";
-        holder += twitter.tweets[w].content + "</h5></div></div></div></div>";
-    }
-    document.getElementById("tweets_place").innerHTML = holder;
-};
+    });
 
-twitter.addFriend = function () {
-    var friendObject = {};
-    friendObject.url = document.getElementById("new_friend").value;
-    document.getElementById("new_friend").value = "";
-    twitter.Ajax(
-        "POST",
-        twitter.URLMaker(null, "friends"),
-        friendObject,
-        function () { window.location.reload(true); },
-        function () { window.location.reload(true); }
-        );
-};
+});
 
-twitter.enterPressed = function (e) {
+MyQuizApp.resetDrag = function () {
+    $("#draggable1").animate({
+        top: "0px",
+        left: "0px"
+    });
+    $("#draggable2").animate({
+        top: "0px",
+        left: "0px"
+    });
+    $("#draggable3").animate({
+        top: "0px",
+        left: "0px"
+    });
+    MyQuizApp.draggedItem = "";
+}
+
+MyQuizApp.enterPressed = function (e) {
     if (e.charCode === 13 || e.keyCode === 13) {
-        twitter.addTweet();
+        MyQuizApp.nextQuestion();
     }
-};
+}
 
-twitter.addTweet = function () {
-    var tweetObject = {};
-    tweetObject.content = document.getElementById("new_tweet").value;
-    tweetObject.time = Date.now();
-    twitter.Ajax(
-        "POST",
-        twitter.URLMaker(null, "tweets"),
-        tweetObject,
-        function (x) { console.log(JSON.stringify(x)) },
-        console.log
-        );
-    document.getElementById("new_tweet").value = "";
-};
-
-twitter.deleteProfile = function () {
-    twitter.Ajax(
-        "DELETE",
-        twitter.URLMaker(null, "profile"),
-        null,
-        twitter.addProfile,
-        console.log
-        );
-};
-
-twitter.addProfile = function () {
-    var profileObject = {};
-    profileObject.name = document.getElementById("name_update").value;
-    profileObject.url = twitter.profileOriginal[0].url;
-    profileObject.image = document.getElementById("img_update").value;
-    profileObject.bio = document.getElementById("bio_update").value;
-    twitter.Ajax(
-        "POST",
-        twitter.URLMaker(null, "profile"),
-        profileObject,
-        twitter.getProfile,
-        console.log
-        );
-};
-
-twitter.deleteTweet = function (urlTarget) {
-    twitter.Ajax(
-        "DELETE",
-        twitter.URLMaker(null, ["tweets", urlTarget]),
-        null,
-        twitter.deleteMyTweetFromLocal(urlTarget),
-        console.log
-        );
-};
-
-twitter.deleteMyTweetFromLocal = function (key) {
-    var indexArray = []
-    for (var index in twitter.tweets) {
-        indexArray.push(twitter.tweets[index].key);
-    }
-    var index2erase = $.inArray(key, indexArray)
-    if (index2erase > -1) {
-        twitter.tweets.splice(index2erase, 1);
-    }
-};
-
-twitter.deleteFriends = function (urlTarget) {
-    twitter.Ajax(
-        "DELETE",
-        twitter.URLMaker(null, ["friends", urlTarget]),
-        null,
-        function () { window.location.reload(true) },
-        function () { window.location.reload(true) }
-        );
-};
-
-twitter.getProfile();
-twitter.getFriends();
-
-setInterval(function () {
-    twitter.getMyTweets();
-    for (var i in twitter.friends) {
-        twitter.getFriendsTweets(i);
-    }
-}, 3000)
+MyQuizApp.drawToTitleModal();
+MyQuizApp.drawToTitleMain();
+MyQuizApp.drawToModal();
+MyQuizApp.passValuestoModal();
+MyQuizApp.randomAll();
+MyQuizApp.saveChanges();
+MyQuizApp.progressBarUpdate();
