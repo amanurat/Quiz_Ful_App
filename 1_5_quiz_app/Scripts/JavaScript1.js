@@ -359,7 +359,7 @@ MyQuizApp.getAnswer = function () {
 
     //CHECK FOR ALLLLLL IN THE END (EXCEPT FOR "MORE THAN ONE CORRECT"
     for (var i = 0; i < MyQuizApp.questions[q].correctOption.length; i++) {
-        if (MyQuizApp.questions[q].questionType === "MoreThanOneCorrect") { break;}
+        if (MyQuizApp.questions[q].questionType === "MoreThanOneCorrect") { break; }
         if (MyQuizApp.questions[q].answerChosen.toLowerCase() === MyQuizApp.questions[q].correctOption[i].toLowerCase()) {
             MyQuizApp.questions[q].correctIncorrect = "correct";
             break;
@@ -383,9 +383,9 @@ MyQuizApp.MultipleChoice = function (quest) {
 
 MyQuizApp.FillInBlank = function () {
     var options = MyQuizApp.questions[MyQuizApp.currentQuestion].optionsArray;
-    var holder = "<form class='navbar-form navbar-left'><div class='form-group'>";
+    var holder = "<form class='navbar-form navbar-left' onSubmit='return false;'><div class='form-group'>";
     holder += "<input id='tigre tono'";
-    holder += "type='text' class='form-control' placeholder='Enter answer'></div></form>";
+    holder += "type='text' class='form-control' placeholder='Enter answer' onkeypress='MyQuizApp.enterPressed(window.event)'></div></form>";
     return holder;
 };
 
@@ -481,6 +481,13 @@ MyQuizApp.resetDrag = function () {
         left: "0px"
     });
     MyQuizApp.draggedItem = "";
+}
+
+MyQuizApp.enterPressed = function (e) {
+    console.log(e);
+    if (e.charCode === 13 || e.keyCode === 13) {
+        MyQuizApp.nextQuestion();
+    }
 }
 
 MyQuizApp.drawToTitleModal();
