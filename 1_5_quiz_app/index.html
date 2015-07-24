@@ -6,15 +6,14 @@
     <link href="Content/font-awesome.css" rel="stylesheet" />
     <link href="Content/StyleSheet1.css" rel="stylesheet" />
 </head>
-<body><br />
-    <div class="container"><span style="font-size:larger; font-weight:900">by <a href="http://urielzen.com">UC</a></span>
+<body>
+    <br />
+    <div class="container">
+        <i style="font-size:larger; font-weight:900">by <a href="http://urielzen.com">UC</a></i>
         <div class="row clearfix">
             <div class="col-md-12 column">
-                <div class="progress">
-
-                </div>
                 <div class="jumbotron well">
-                    <h1 id="quiz title">
+                    <h1 id="quizTitle">
                         Error loading title!
                     </h1>
                     <div>
@@ -23,46 +22,38 @@
                         </p>
                     </div>
                     <p>
-                        <a id="start next" class="btn btn-primary btn-large" onclick="MyQuizApp.startQuiz();">
+                        <a id="startNext" class="btn btn-primary btn-large" onclick="MyQuizApp.startQuiz();">
                             Start&nbsp;&nbsp;
-                            <span class='fa fa-play fa-2x'></span>
+                            <i class='fa fa-play fa-2x'></i>
                         </a>
                         <a id="submit" class="btn btn-warning btn-large" onclick="MyQuizApp.openModalWindow();">
                             Edit&nbsp;&nbsp;
-                            <span class='fa fa-edit fa-2x'></span>
+                            <i class='fa fa-edit fa-2x'></i>
                         </a>
                     </p>
                 </div>
                 <div>
                     <!--THIS DIV CONTAINS THE DRAG AND DROP WHICH IS HIDDEN BY DEFAULT-->
                     <div class="row clearfix">
-                        <div id="respuestas" class="col-md-12 column">
-
-                        </div>
-
+                        <div id="respuestas" class="col-md-12 column"></div>
                         <div id="respuestasDrag" class="col-md-12 column displayNone">
-
                             <div id="draggable1" class="ui-widget-content">
                                 <p id="Xdraggable1">Option 1</p>
                             </div>
-
                             <div id="draggable2" class="ui-widget-content">
                                 <p id="Xdraggable2">Option2</p>
                             </div>
-
                             <div id="draggable3" class="ui-widget-content">
                                 <p id="Xdraggable3">Option3</p>
                             </div>
-
                             <div id="droppable" class="ui-widget-content">
                                 <p>
-                                    <center><span class='fa fa-trash-o fa-5x'></span></center>
+                                    <center><i class='fa fa-trash-o fa-5x'></i></center>
                                 </p>
                             </div>
                         </div>
                     </div>
                     <!--THE DRAG AND DROP ENDS HERE-->
-
                 </div>
                 <br />
                 <div class="row clearfix">
@@ -80,28 +71,53 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="edit-modal" aria-hidden="true" onclick="MyQuizApp.closeQuestion();">&times;</button>
-                    <h4 class="modal-title" id="modal title">Title Error!</h4>
+                    <h4 class="modal-title" id="modalTitle">
+                        <input type='text' id='modalTitleInput' class='form-control' value='' data-toggle='tooltip' data-placement='bottom' title='Test Title'>
+                    </h4>
                 </div>
-
                 <div class="modal-header displayNormal" id="topButtons">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button type='button' class='btn btn-warning' onclick='MyQuizApp.randomAll();'><span class='fa fa-hand-o-right fa-2x'></span>..<span class='fa fa-random fa-2x'></span></button>
-                    <button type='button' class='btn btn-success' onclick='MyQuizApp.addQuestion();'><span class='fa fa-hand-o-right fa-2x'></span>..<span class='fa fa-plus fa-2x'></span></button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-times fa-2x"></span></button>
-                    <button type="button" class="btn btn-primary" onclick="MyQuizApp.saveChangesAndClose();"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-floppy-o fa-2x"></span></button>
+                    <div class='container-fluid'>
+                        <div class='row'>
+                            <div class='col-xs-6 textLeft'>
+                                <button type='button' class='btn btn-warning' onclick='MyQuizApp.randomAll();' data-toggle='tooltip' data-placement='bottom' title='Ramdomize Questions Order'>
+                                    <i class='fa fa-random fa-2x'></i>
+                                </button>
+                                <button type='button' class='btn btn-success' onclick='MyQuizApp.addQuestion();' data-toggle='tooltip' data-placement='bottom' title='Add New Question'>
+                                    <i class='fa fa-plus fa-2x'></i>
+                                </button>
+                            </div>
+                            <div class='col-xs-6 textRight'>
+                                <button type="button" class="btn btn-default" data-dismiss="modal" data-toggle='tooltip' data-placement='bottom' title='Close and dismiss Changes'>
+                                    <i class="fa fa-times fa-2x"></i>
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="MyQuizApp.saveChangesAndClose();" data-toggle='tooltip' data-placement='bottom' title='Save Changes'>
+                                    <i class="fa fa-floppy-o fa-2x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
                 <div class="modal-body">
-                    <div class="container">
-                        <div class="row clearfix">
-                            <table id="modal table"></table>
+                    <div>
+                        <div>
+                            <div id="modalTable"></div>
                         </div>
                     </div>
                 </div>
                 <h4 class="modal-title"></h4>
                 <div class="modal-footer displayNormal" id="bottomButtons">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-times fa-2x"></span></button>
-                    <button type="button" class="btn btn-primary" onclick="MyQuizApp.saveChangesAndClose();"><span class="fa fa-hand-o-right fa-2x"></span>..<span class="fa fa-floppy-o fa-2x"></span></button>
+                    <div class='container-fluid'>
+                        <div class='row'>
+                            <div class='col-xs-12'>
+                                <button type="button" class="btn btn-default" data-dismiss="modal" data-toggle='tooltip' data-placement='top' title='Close and dismiss Changes'>
+                                    <i class="fa fa-times fa-2x"></i>
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="MyQuizApp.saveChangesAndClose();" data-toggle='tooltip' data-placement='top' title='Save Changes'>
+                                    <i class="fa fa-floppy-o fa-2x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -111,7 +127,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-body" style="text-align: center">
-                    <button type="button" class="btn btn-success" data-dismiss="modal"><span class="fa fa-check fa-5x"></span></button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal"><i class="fa fa-check fa-5x"></i></button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -121,7 +137,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-body" style="text-align: center">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="fa fa-times fa-5x"></span></button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times fa-5x"></i></button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -131,7 +147,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-body" style="text-align: center">
-                    <button type="button" class="btn btn-success" data-dismiss="modal"><span class="fa fa-spinner fa-spin fa-5x"></span><span class="fa fa-5x">Go!</span><span class="fa fa-rocket fa-5x"></span></button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal"><i class="fa fa-spinner fa-spin fa-5x"></i><i class="fa fa-5x">Go!</i><i class="fa fa-rocket fa-5x"></i></button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -140,14 +156,20 @@
     <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabelFinal" aria-hidden="true" id="final-modal" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h2 style="text-align:center">
+                        Results!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span id="finalResults"></span>
+                    </h2>
+                </div>
                 <div class="modal-body" style="text-align: center">
-                    <span class="btn btn-info" onclick="location.reload()"><span class="fa fa-pencil-square-o fa-3x"></span><span class="fa fa-3x">&nbsp;Results!</span></span>
-                    <div>
-                        <table id="final table" class="center table table-striped">
-
-                        </table>
+                    <div class="table-responsive">
+                        <table id="finalTable" class="center table table-striped table-bordered table-hover"></table>
                     </div>
-                    <div id="final results" class="fa fa-3x">
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-info" onclick="location.reload()" data-toggle="tooltip" title="Restart from scratch!">
+                        <i class="fa fa-refresh"></i>
                     </div>
                 </div>
             </div><!-- /.modal-content -->
