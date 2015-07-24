@@ -19,7 +19,6 @@ MyQuizApp.typeOfQuestions = [
 ];
 
 MyQuizApp.Quest = function (questionType, questionText, optionsArray, correctOption) {
-    "use strict"
     this.questionType = questionType;
     this.questionText = questionText;
     this.optionsArray = optionsArray;
@@ -67,7 +66,6 @@ MyQuizApp.questions.push(new MyQuizApp.Quest(
 
 MyQuizApp.randomArray = function (array) {
     // While there remain elements to shuffle...
-    "use strict"
     var currentIndex = array.length, temporaryValue, randomIndex;
     while (0 !== currentIndex) {
         // Pick a remaining element...
@@ -82,14 +80,12 @@ MyQuizApp.randomArray = function (array) {
 };
 
 MyQuizApp.randomizeOptions = function () {
-    "use strict"
     for (var i in MyQuizApp.questions) {
         MyQuizApp.questions[i].optionsArray = MyQuizApp.randomArray(MyQuizApp.questions[i].optionsArray);
     }
 };
 
 MyQuizApp.addQuestion = function () {
-    "use strict"
     var newQuestion = new MyQuizApp.Quest(MyQuizApp.typeOfQuestions[0][0], "", ["", "", ""], ["", ""]);
     MyQuizApp.questions.unshift(newQuestion);
     MyQuizApp.drawToModal();
@@ -98,84 +94,138 @@ MyQuizApp.addQuestion = function () {
 };
 
 MyQuizApp.drawToTitleMain = function () {
-    document.getElementById("quiz title").innerHTML = MyQuizApp.quizTitle;
+    document.getElementById("quizTitle").innerHTML = MyQuizApp.quizTitle;
 };
 
 MyQuizApp.drawToTitleModal = function () {
-    var modalTitleHolder = "";
-    modalTitleHolder += "<input type='text' id='modal title input' class='form-control' value='"
-    modalTitleHolder += MyQuizApp.quizTitle;
-    modalTitleHolder += "'>";
-    document.getElementById("modal title").innerHTML = modalTitleHolder;
+    document.getElementById("modalTitleInput").value = MyQuizApp.quizTitle;
 };
 
 MyQuizApp.drawToModal = function () {
-    "use strict"
     var modalHolder = "";
     for (var i = 0; i < MyQuizApp.questions.length; i++) {
-        modalHolder += "<tr><td><ul style='list-style-type:none'>";
-        modalHolder += "<li>";
-        modalHolder += "&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;Type Of Question";
-        modalHolder += "<select name='cars' class='form-control' id='" + i + "type of question'>";
+        modalHolder += "<div class='container-fluid'>" +
+                            "<div class='row'>" +
+                                "<div class='col-sm-12'>" +
+                                    "<h4>" +
+                                        "Question #" + (i + 1) +
+                                    "</h4>" +
+                                "</div>" +
+                            "</div>" +
+                            "<div class='row'>" +
+                                "<div class='col-sm-3 textRight'>" +
+                                    "Type Of Question" +
+                                "</div>" +
+                                "<div class='col-sm-9'>" +
+                                    "<select name='cars' class='form-control' id='" + i + "typeOfQuestion' " +
+                                    "onchange='MyQuizApp.changeTypeOfQuestion(" + i + ")'>";
         for (var j = 0; j < MyQuizApp.typeOfQuestions[0].length; j++) {
-            modalHolder += "<option value='" + MyQuizApp.typeOfQuestions[0][j] + "'>";
-            modalHolder += MyQuizApp.typeOfQuestions[1][j] + "</option>";
-        };
-        modalHolder += "</select>";
-        modalHolder += "</li>";
-        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
-        modalHolder += "Question<input type='text' id='" + i + "question' class='form-control'></li>";
-        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
-        modalHolder += "Answer Option 1<input type='text' id='" + i + "answer option 1' class='form-control'></li>";
-        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
-        modalHolder += "Answer Option 2<input type='text' id='" + i + "answer option 2' class='form-control'></li>";
-        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
-        modalHolder += "Answer Option 3<input type='text' id='" + i + "answer option 3' class='form-control'></li>";
-        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
-        modalHolder += "Correct Option 1<input type='text' id='" + i + "correct option 1' class='form-control'></li>";
-        modalHolder += "<li>&nbsp;&nbsp;<span class='fa fa-level-down fa-rotate-270'></span>&nbsp;";
-        modalHolder += "Correct Option 2<input type='text' id='" + i + "correct option 2' placeholder='Optional' class='form-control'></li>";
-        modalHolder += "<li>&nbsp;</li>";
-        if (MyQuizApp.questions.length === 1) {
-            modalHolder += "<li class='displayNone'>";
-        } else {
-            modalHolder += "<li>";
+            modalHolder += "<option value='" + MyQuizApp.typeOfQuestions[0][j] + "'>" +
+                                MyQuizApp.typeOfQuestions[1][j] +
+                           "</option>";
         }
-        modalHolder += "<div class='btn btn-danger' onclick='MyQuizApp.deleteQuestion(";
-        modalHolder += i + ");'><span class='fa fa-hand-o-right fa-2x'></span>..<span class='fa fa-trash-o fa-2x'></span></div></li>";
-        modalHolder += "</ul></td></tr>";
+        modalHolder += "</select>" +
+                                "</div>" +
+                            "</div>" +
+                            "<div class='row'>" +
+                                "<div class='col-sm-3 textRight bg-info'>" +
+                                     "Question" +
+                                "</div>" +
+                                "<div class='col-sm-9'>" +
+                                     "<input type='text' id='" + i + "question' class='form-control'>" +
+                                "</div>" +
+                            "</div>";
+        modalHolder += "<div id='" + "AnswerOptionsForQuestion" + i + "'>";
+        if (MyQuizApp.questions[i].questionType !== MyQuizApp.typeOfQuestions[0][1]/*"FillInBlank"*/) {
+            modalHolder += MyQuizApp.drawToModalAnswerOptionsForQuestion(i);
+        }
+        modalHolder += "</div>";
+        modalHolder += "<div class='row'>" +
+                           "<div class='col-sm-3 textRight bg-success'>" +
+                                "Correct Option 1" +
+                           "</div>" +
+                           "<div class='col-sm-9'>" +
+                               "<input type='text' id='" + i + "correctOption1' class='form-control'>" +
+                           "</div>" +
+                       "</div>" +
+                       "<div class='row'>" +
+                           "<div class='col-sm-3 textRight bg-success'>" +
+                                "Correct Option 2" +
+                           "</div>" +
+                           "<div class='col-sm-9'>" +
+                                "<input type='text' id='" + i + "correctOption2' placeholder='Optional' class='form-control'>" +
+                           "</div>" +
+                       "</div>";
+        if (MyQuizApp.questions.length > 1) {
+            modalHolder += "<div class='row textRight'>" +
+                                "<div class='btn btn-danger' onclick='MyQuizApp.deleteQuestion(" + i + ");' data-toggle='tooltip' data-placement='left' title='Delete Question'>" +
+                                    "<span class='fa fa-trash-o fa-2x'></span>" +
+                                "</div>" +
+                           "</div>"
+        }
+        modalHolder += "</div>"
         if (MyQuizApp.questions.length !== i + 1) {
-            modalHolder += "<tr><td><hr></td></tr>";
+            modalHolder += "<hr>";
         }
     }
-    document.getElementById("modal table").innerHTML = modalHolder;
+    document.getElementById("modalTable").innerHTML = modalHolder;
+    $('[data-toggle="tooltip"]').tooltip()
+};
+
+MyQuizApp.drawToModalAnswerOptionsForQuestion = function (i) {
+    var holder = "<div class='row'>" +
+                          "<div class='col-sm-3 textRight bg-warning'>" +
+                               "Answer Option 1" +
+                          "</div>" +
+                          "<div class='col-sm-9'>" +
+                               "<input type='text' id='" + i + "answerOption1' class='form-control'>" +
+                          "</div>" +
+                      "</div>" +
+                      "<div class='row'>" +
+                          "<div class='col-sm-3 textRight bg-warning'>" +
+                              "Answer Option 2" +
+                          "</div>" +
+                          "<div class='col-sm-9'>" +
+                              "<input type='text' id='" + i + "answerOption2' class='form-control'>" +
+                          "</div>" +
+                      "</div>" +
+                      "<div class='row'>" +
+                          "<div class='col-sm-3 textRight bg-warning'>" +
+                               "Answer Option 3" +
+                          "</div>" +
+                          "<div class='col-sm-9'>" +
+                               "<input type='text' id='" + i + "answerOption3' class='form-control'>" +
+                          "</div>" +
+                      "</div>";
+    return holder;
+};
+
+MyQuizApp.changeTypeOfQuestion = function (i) {
+    var questionTypeSelected = document.getElementById(i + "typeOfQuestion").value;
+    var answerOptionsForQuestion = document.getElementById("AnswerOptionsForQuestion" + i);
+    if (questionTypeSelected === MyQuizApp.typeOfQuestions[0][1]/*"FillInBlank"*/) {
+        answerOptionsForQuestion.innerHTML = "";
+    } else {
+        answerOptionsForQuestion.innerHTML = MyQuizApp.drawToModalAnswerOptionsForQuestion(i);
+    }
 };
 
 MyQuizApp.closeQuestion = function () {
     $("#edit-modal").modal('hide');
-}
+};
 
 MyQuizApp.dropDown = function (type, elementID) {
-    "use strict"
     var selectoptions = document.getElementById(elementID).getElementsByTagName("option");
     for (var i = 0; i < selectoptions.length; i++) {
-        selectoptions[i].removeAttribute("selected");
-    }
-    if (type === MyQuizApp.typeOfQuestions[0][0]) {
-        selectoptions[0].setAttribute("selected", "selected");
-    } else if (type === MyQuizApp.typeOfQuestions[0][1]) {
-        selectoptions[1].setAttribute("selected", "selected");
-    } else if (type === MyQuizApp.typeOfQuestions[0][2]) {
-        selectoptions[2].setAttribute("selected", "selected");
-    } else if (type === MyQuizApp.typeOfQuestions[0][3]) {
-        selectoptions[3].setAttribute("selected", "selected");
-    } else {
-        alert("Error, please contact administrator");
+        if (type === MyQuizApp.typeOfQuestions[0][i]) {
+            selectoptions[i].setAttribute("selected", "selected");
+        } else {
+            selectoptions[i].removeAttribute("selected");
+        }
     }
 };
 
 MyQuizApp.deleteQuestion = function (i) {
-    "use strict"
     MyQuizApp.saveChanges();
     MyQuizApp.questions.splice(i, 1);
     MyQuizApp.drawToModal();
@@ -185,24 +235,24 @@ MyQuizApp.deleteQuestion = function (i) {
 };
 
 MyQuizApp.saveChanges = function () {
-    "use strict"
-    MyQuizApp.quizTitle = document.getElementById("modal title input").value;
+    var optArrayElemt;
+    MyQuizApp.quizTitle = document.getElementById("modalTitleInput").value;
     for (var i = 0; i < MyQuizApp.questions.length; i++) {
-        MyQuizApp.questions[i].questionType = document.getElementById(i + "type of question").value;
+        MyQuizApp.questions[i].questionType = document.getElementById(i + "typeOfQuestion").value;
         MyQuizApp.questions[i].questionText = document.getElementById(i + "question").value;
         for (var j = 0; j < MyQuizApp.questions[i].optionsArray.length; j++) {
-            var n = j + 1;
-            MyQuizApp.questions[i].optionsArray[j] = document.getElementById(i + "answer option " + n).value;
+            optArrayElemt = document.getElementById(i + "answerOption" + (j + 1))
+            if (optArrayElemt) {
+                MyQuizApp.questions[i].optionsArray[j] = optArrayElemt.value;
+            }
         }
         for (var j = 0; j < MyQuizApp.questions[i].correctOption.length; j++) {
-            var n = j + 1;
-            MyQuizApp.questions[i].correctOption[j] = document.getElementById(i + "correct option " + n).value;
+            MyQuizApp.questions[i].correctOption[j] = document.getElementById(i + "correctOption" + (j + 1)).value;
         }
     }
 };
 
 MyQuizApp.saveChangesAndClose = function () {
-    "use strict"
     MyQuizApp.saveChanges();
     MyQuizApp.drawToTitleMain();
     alert("Changes saved successfully!");
@@ -210,8 +260,8 @@ MyQuizApp.saveChangesAndClose = function () {
 };
 
 MyQuizApp.passValuestoModal = function () {
-    "use strict"
     var type, text, op1, op2, op3, c1, c2;
+    var typeEl, textEl, op1El, op2El, op3El, c1El, c2El;
     for (var i = 0; i < MyQuizApp.questions.length; i++) {
         type = MyQuizApp.questions[i].questionType;
         text = MyQuizApp.questions[i].questionText;
@@ -220,13 +270,19 @@ MyQuizApp.passValuestoModal = function () {
         op3 = MyQuizApp.questions[i].optionsArray[2];
         c1 = MyQuizApp.questions[i].correctOption[0];
         c2 = MyQuizApp.questions[i].correctOption[1];
-        MyQuizApp.dropDown(type, i + "type of question");
-        document.getElementById(i + "question").value = text;
-        document.getElementById(i + "answer option 1").value = op1;
-        document.getElementById(i + "answer option 2").value = op2;
-        document.getElementById(i + "answer option 3").value = op3;
-        document.getElementById(i + "correct option 1").value = c1;
-        document.getElementById(i + "correct option 2").value = c2;
+        MyQuizApp.dropDown(type, i + "typeOfQuestion");
+        textEl = document.getElementById(i + "question");
+        op1El = document.getElementById(i + "answerOption1");
+        op2El = document.getElementById(i + "answerOption2");
+        op3El = document.getElementById(i + "answerOption3");
+        c1El = document.getElementById(i + "correctOption1");
+        c2El = document.getElementById(i + "correctOption2");
+        if (textEl) { textEl.value = text }
+        if (op1El) { op1El.value = op1 }
+        if (op2El) { op2El.value = op2 }
+        if (op3El) { op3El.value = op3 }
+        if (c1El) { c1El.value = c1 }
+        if (c2El) { c2El.value = c2 }
     }
 };
 
@@ -242,6 +298,9 @@ MyQuizApp.randomAll = function () {
 
 MyQuizApp.openModalWindow = function () {
     $("#edit-modal").modal();
+    $('#edit-modal').on('shown.bs.modal', function () {
+        $("#modalTitleInput").focus();
+    })
 };
 
 MyQuizApp.progressBarUpdate = function () {
@@ -268,13 +327,13 @@ MyQuizApp.startQuiz = function () {
     var typeQuestions = MyQuizApp.OptionsHTML(MyQuizApp.currentQuestion);
     document.getElementById("preguntas").innerHTML = MyQuizApp.questions[0].questionText;
     $('#respuestas').html(typeQuestions);
-    document.getElementById("start next").innerHTML = "Submit&nbsp;&nbsp;<span class='fa fa-play fa-2x'></span>";
+    document.getElementById("startNext").innerHTML = "Submit&nbsp;&nbsp;<span class='fa fa-play fa-2x'></span>";
     document.getElementById("submit").className = "displayNone";
-    document.getElementById("start next").setAttribute("onclick", "MyQuizApp.nextQuestion();");
+    document.getElementById("startNext").setAttribute("onclick", "MyQuizApp.nextQuestion();");
     $("#ready-go-modal").modal();
     setTimeout(function () {
         $("#ready-go-modal").modal('hide');
-    }, 1000); // how long do you want the delay to be? 
+    }, 1000);
 };
 
 MyQuizApp.displayAnswersModal = function (q) {
@@ -282,20 +341,19 @@ MyQuizApp.displayAnswersModal = function (q) {
         $("#correct-modal").modal();
         setTimeout(function () {
             $("#correct-modal").modal('hide');
-        }, 1000); // how long do you want the delay to be? 
+        }, 1000);
     } else {
         $("#incorrect-modal").modal();
         setTimeout(function () {
             $("#incorrect-modal").modal('hide');
-        }, 1000); // how long do you want the delay to be?
+        }, 1000);
     }
     MyQuizApp.progressBarUpdate();
 };
 
 MyQuizApp.OptionsHTML = function (q) {
     var type = MyQuizApp.questions[q].questionType;
-    if (MyQuizApp[type]) { return MyQuizApp[type](q); }
-    else { return "Error, please contact your administrator"; }
+    return MyQuizApp[type] ? MyQuizApp[type](q) : "Error, please contact your administrator";
 };
 
 MyQuizApp.nextQuestion = function () {
@@ -304,23 +362,23 @@ MyQuizApp.nextQuestion = function () {
     document.getElementById("respuestas").className = "col-md-12 column";
     document.getElementById("respuestasDrag").className = "displayNone";
     MyQuizApp.getAnswer();
+    MyQuizApp.displayAnswersModal(i);
     if (MyQuizApp.currentQuestion === MyQuizApp.questions.length - 1) {
-        MyQuizApp.finalResults();
+        setTimeout(function () {
+            MyQuizApp.finalResults();
+        }, 1000);
     } else {
         var typeQuestions = MyQuizApp.OptionsHTML(iNext);
         document.getElementById("preguntas").innerHTML = MyQuizApp.questions[iNext].questionText;
         $("#respuestas").html(typeQuestions);
         MyQuizApp.currentQuestion++;
-        MyQuizApp.displayAnswersModal(i);
     }
-
 };
 
 MyQuizApp.getAnswer = function () {
     var q = MyQuizApp.currentQuestion;
     var options = MyQuizApp.questions[q].optionsArray;
-    MyQuizApp.questions[q].correctIncorrect = "incorrect"
-
+    MyQuizApp.questions[q].correctIncorrect = "incorrect";
     // FOR MULTIPLE CHOICE
     if (MyQuizApp.questions[q].questionType === "MultipleChoice") {
         for (var i = 0; i < options.length; i++) {
@@ -330,14 +388,12 @@ MyQuizApp.getAnswer = function () {
             }
         }
     }
-
     // FOR FILL IN BLANK
     if (MyQuizApp.questions[q].questionType === "FillInBlank") {
-        if (document.getElementById("tigre tono").value !== "") {
-            MyQuizApp.questions[q].answerChosen = document.getElementById("tigre tono").value;
+        if (document.getElementById("tigreTono").value !== "") {
+            MyQuizApp.questions[q].answerChosen = document.getElementById("tigreTono").value;
         }
     }
-
     // FOR MORE THAN ONE CORRECT
     if (MyQuizApp.questions[q].questionType === "MoreThanOneCorrect") {
         MyQuizApp.questions[q].answerChosen = ["", "", ""];
@@ -350,13 +406,10 @@ MyQuizApp.getAnswer = function () {
         var myArray = MyQuizApp.questions[q].answerChosen.join("").split("").sort().join("");
         if (correctArray == myArray) { MyQuizApp.questions[q].correctIncorrect = "correct"; }
     }
-
     // FOR DRAG AND DROP
     if (MyQuizApp.questions[q].questionType === "DragAndDrop") {
         MyQuizApp.resetDrag();
     }
-
-
     //CHECK FOR ALLLLLL IN THE END (EXCEPT FOR "MORE THAN ONE CORRECT"
     for (var i = 0; i < MyQuizApp.questions[q].correctOption.length; i++) {
         if (MyQuizApp.questions[q].questionType === "MoreThanOneCorrect") { break; }
@@ -384,7 +437,7 @@ MyQuizApp.MultipleChoice = function (quest) {
 MyQuizApp.FillInBlank = function () {
     var options = MyQuizApp.questions[MyQuizApp.currentQuestion].optionsArray;
     var holder = "<form class='navbar-form navbar-left' onSubmit='return false;'><div class='form-group'>";
-    holder += "<input id='tigre tono'";
+    holder += "<input id='tigreTono'";
     holder += "type='text' class='form-control' placeholder='Enter answer' onkeypress='MyQuizApp.enterPressed(window.event)'></div></form>";
     return holder;
 };
@@ -416,25 +469,45 @@ MyQuizApp.finalResults = function () {
     var numberCorrect = 0;
     var percentageCorrect;
     var holder;
-    MyQuizApp.progressBarUpdate();
     for (var i = 0; i < MyQuizApp.questions.length; i++) {
         if (MyQuizApp.questions[i].correctIncorrect === "correct") { numberCorrect++; }
     }
     percentageCorrect = numberCorrect / MyQuizApp.questions.length;
     percentageCorrect = parseInt(percentageCorrect * 100) + "%";
-    document.getElementById("final results").innerHTML = percentageCorrect;
+    document.getElementById("finalResults").innerHTML = percentageCorrect;
     holder = "<tr style='font-weight:bold'><td>Your Answer</td><td>&nbsp;:&nbsp;</td><td>Correct Answer</td></tr>";
     for (var i = 0; i < MyQuizApp.questions.length; i++) {
         holder += "<tr><td>";
-        holder += MyQuizApp.questions[i].answerChosen;
-        holder += "</td><td>:</td><td>";
-        holder += MyQuizApp.questions[i].correctOption[0] + ",";
+        if (MyQuizApp.questions[i].questionType === MyQuizApp.typeOfQuestions[0][2]) {//"MoreThanOneCorrect"
+            holder += MyQuizApp.checkHowManyMoreThanOneCorrectWereChosen(MyQuizApp.questions[i].answerChosen);
+        } else {
+            holder += MyQuizApp.questions[i].answerChosen;
+        }
+        holder += "</td>";
+        if (MyQuizApp.questions[i].correctIncorrect === "correct") {
+            holder += "<td class='success'><i class='fa fa-check'></i></td>";
+        } else {
+            holder += "<td class='warning'><i class='fa fa-times'></i></td>";
+        }
+        holder += "<td>";
+        holder += MyQuizApp.questions[i].correctOption[0];
+        holder += MyQuizApp.questions[i].correctOption[1] === "" ? "" : ", ";
         holder += MyQuizApp.questions[i].correctOption[1];
         holder += "</td></tr>";
-        document.getElementById("final table").innerHTML = holder;
+        document.getElementById("finalTable").innerHTML = holder;
     }
     $("#final-modal").modal();
+    $('[data-toggle="tooltip"]').tooltip()
 };
+
+MyQuizApp.checkHowManyMoreThanOneCorrectWereChosen = function (answerChosenArray) {
+    var newAnswerChosenArray = [];
+    for (var i = 0; i < answerChosenArray.length; i++) {
+        if (answerChosenArray[i] !== "")
+            newAnswerChosenArray.push(answerChosenArray[i])
+    }
+    return newAnswerChosenArray.length === 0 ? "_" : newAnswerChosenArray.join(", ");
+}
 
 $(function () {
     $("#draggable1").draggable({ revert: 'invalid', });
@@ -464,7 +537,6 @@ $(function () {
             MyQuizApp.nextQuestion();
         }
     });
-
 });
 
 MyQuizApp.resetDrag = function () {
