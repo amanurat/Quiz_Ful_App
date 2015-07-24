@@ -86,6 +86,10 @@ MyQuizApp.randomizeOptions = function () {
 };
 
 MyQuizApp.addQuestion = function () {
+    if (MyQuizApp.questions.length >= 10) {
+        alert("You cannot add more than 10 questions.")
+        return;
+    }
     var newQuestion = new MyQuizApp.Quest(MyQuizApp.typeOfQuestions[0][0], "", ["", "", ""], ["", ""]);
     MyQuizApp.questions.unshift(newQuestion);
     MyQuizApp.drawToModal();
